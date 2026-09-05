@@ -26,6 +26,16 @@ const QUESTION_TEMPLATES = {
     "What's the core algorithm or data structure here, in 2-3 sentences?",
     "Which edge case in this scenario is most likely to break a naive first pass, and why?",
     "Name one test you'd write to catch a regression here before it ships."
+  ],
+  theorist: [
+    "What's the paper's core theoretical claim, in one sentence?",
+    "What assumption does it make that breaks first in a real production ranking system?",
+    "How would you explain this to an interviewer without whiteboarding the full derivation?"
+  ],
+  curator: [
+    "What is this person or publication best known for in ranking, recsys, or ads ML?",
+    "Name one specific piece of their work you'd bring up if it came up in the interview.",
+    "What's one open question of theirs you'd want to ask if you actually met them?"
   ]
 };
 
@@ -415,6 +425,185 @@ const STREAMS = [
         url: "https://arxiv.org/pdf/2507.15551",
         source: "Coding scenario · Latency & reliability",
         description: "Load-test a ranking service's p99 latency under a simulated auction QPS burst, and test that it degrades gracefully to a cheaper fallback model instead of timing out the whole auction."
+      }
+    ]
+  },
+  {
+    id: "theorist",
+    num: "06",
+    name: "ML Theory Papers",
+    tagline: "Canonical papers",
+    mandate: "Grounds the DL-book chapters in the actual papers that introduced regularization, sequential user modeling, the optimizers that make training any of it tractable, and the information theory that underlies both loss functions and representation learning.",
+    resources: [
+      {
+        id: "t1",
+        title: "Dropout: A Simple Way to Prevent Neural Networks from Overfitting",
+        url: "https://jmlr.org/papers/v15/srivastava14a.html",
+        source: "Srivastava, Hinton, Krizhevsky, Sutskever, Salakhutdinov · JMLR 2014",
+        description: "The original dropout paper: randomly dropping units during training as an efficient approximation to averaging over an exponential number of thinned networks."
+      },
+      {
+        id: "t2",
+        title: "Batch Normalization: Accelerating Deep Network Training by Reducing Internal Covariate Shift",
+        url: "https://arxiv.org/abs/1502.03167",
+        source: "Ioffe & Szegedy · ICML 2015 · arXiv 1502.03167",
+        description: "Normalizes layer inputs per mini-batch, which speeds up training and acts as an incidental regularizer — the paper's original \"internal covariate shift\" explanation is itself a classic interview debate point."
+      },
+      {
+        id: "t3",
+        title: "When Does Label Smoothing Help?",
+        url: "https://arxiv.org/abs/1906.02629",
+        source: "Müller, Kornblith, Hinton · NeurIPS 2019 · arXiv 1906.02629",
+        description: "Softens hard training targets to regularize the model, then shows via penultimate-layer visualizations when that softening helps generalization and when it hurts model calibration and distillation."
+      },
+      {
+        id: "t4",
+        title: "Wide & Deep Learning for Recommender Systems",
+        url: "https://arxiv.org/abs/1606.07792",
+        source: "Cheng et al. · Google · DLRS 2016 · arXiv 1606.07792",
+        description: "Jointly trains a wide linear model (memorization of feature co-occurrence) with a deep neural network (generalization via embeddings) — the template most production ranking stacks still riff on."
+      },
+      {
+        id: "t5",
+        title: "Deep Interest Network for Click-Through Rate Prediction",
+        url: "https://arxiv.org/abs/1706.06978",
+        source: "Zhou et al. · Alibaba · KDD 2018 · arXiv 1706.06978",
+        description: "Models a user by an attention mechanism over their historical behavior sequence, weighting past actions by relevance to the current candidate ad instead of compressing history into one fixed vector."
+      },
+      {
+        id: "t6",
+        title: "Neural Collaborative Filtering",
+        url: "https://arxiv.org/abs/1708.05031",
+        source: "He, Liao, Zhang, Nie, Hu, Chua · WWW 2017 · arXiv 1708.05031",
+        description: "Replaces the inner product in matrix factorization with a learned neural network, arguing a fixed similarity function under-fits complex user-item interaction patterns."
+      },
+      {
+        id: "t7",
+        title: "Self-Attentive Sequential Recommendation",
+        url: "https://arxiv.org/abs/1808.09781",
+        source: "Kang & McAuley · ICDM 2018 · arXiv 1808.09781",
+        description: "SASRec: uses a self-attention stack to model a user's action sequence, balancing the long-range context of RNNs against the short-range focus of Markov-chain models."
+      },
+      {
+        id: "t8",
+        title: "Adam: A Method for Stochastic Optimization",
+        url: "https://arxiv.org/abs/1412.6980",
+        source: "Kingma & Ba · ICLR 2015 · arXiv 1412.6980",
+        description: "The default optimizer almost everything in this section is trained with — adaptive per-parameter learning rates from running estimates of the first and second moments of the gradient."
+      },
+      {
+        id: "t9",
+        title: "Decoupled Weight Decay Regularization",
+        url: "https://arxiv.org/abs/1711.05101",
+        source: "Loshchilov & Hutter · ICLR 2019 · arXiv 1711.05101",
+        description: "AdamW: shows that Adam's usual L2-penalty implementation isn't equivalent to true weight decay, and decoupling the two fixes Adam's often-worse generalization relative to SGD with momentum."
+      },
+      {
+        id: "t10",
+        title: "SGDR: Stochastic Gradient Descent with Warm Restarts",
+        url: "https://arxiv.org/abs/1608.03983",
+        source: "Loshchilov & Hutter · ICLR 2017 · arXiv 1608.03983",
+        description: "Periodically restarts the learning-rate schedule with cosine annealing instead of decaying it once — a cheap way to escape sharp minima that still shows up in modern LR-schedule choices."
+      },
+      {
+        id: "t11",
+        title: "Lookahead Optimizer: k Steps Forward, 1 Step Back",
+        url: "https://arxiv.org/abs/1907.08610",
+        source: "Zhang, Lucas, Hinton, Ba · NeurIPS 2019 · arXiv 1907.08610",
+        description: "Wraps any base optimizer (e.g. Adam or SGD) with a slow set of weights that periodically pulls back toward, trading a little compute for lower variance and less sensitivity to inner-loop hyperparameters."
+      },
+      {
+        id: "t12",
+        title: "Visual Information Theory",
+        url: "https://colah.github.io/posts/2015-09-Visual-Information/",
+        source: "Christopher Olah · Blog",
+        description: "Builds entropy, cross-entropy, and KL divergence up visually from a bit-cost argument — the intuition layer underneath every classification loss and calibration metric in this app."
+      },
+      {
+        id: "t13",
+        title: "Deep Learning and the Information Bottleneck Principle",
+        url: "https://arxiv.org/abs/1503.02406",
+        source: "Tishby & Zaslavsky · arXiv 1503.02406",
+        description: "Frames a deep network's layers as a tradeoff between compressing the input and preserving mutual information with the label — the theoretical lens the two papers below react to."
+      },
+      {
+        id: "t14",
+        title: "Opening the Black Box of Deep Neural Networks via Information",
+        url: "https://arxiv.org/abs/1703.00810",
+        source: "Shwartz-Ziv & Tishby · arXiv 1703.00810",
+        description: "Tracks mutual information between layers and the input/label across training, arguing SGD has a distinct \"compression phase\" after an initial fitting phase — a claim that drew real pushback (see next)."
+      },
+      {
+        id: "t15",
+        title: "Deep Variational Information Bottleneck",
+        url: "https://arxiv.org/abs/1612.00410",
+        source: "Alemi, Fischer, Dillon, Murphy · ICLR 2017 · arXiv 1612.00410",
+        description: "Turns the information-bottleneck objective into a tractable variational bound you can actually train with, and shows the resulting models are more robust to adversarial inputs."
+      },
+      {
+        id: "t16",
+        title: "Mutual Information Neural Estimation",
+        url: "https://arxiv.org/abs/1801.04062",
+        source: "Belghazi et al. · ICML 2018 · arXiv 1801.04062",
+        description: "MINE: estimates mutual information between high-dimensional continuous variables with a neural network, sidestepping the discretization that makes classical MI estimators fall apart at scale."
+      }
+    ]
+  },
+  {
+    id: "curator",
+    num: "07",
+    name: "People to Follow",
+    tagline: "Signal, not noise",
+    mandate: "Tracks the individuals actually publishing and building ads, ranking, and recommender-systems work — in big tech, academia, and independent blogs — so this reading list stays current after today.",
+    resources: [
+      {
+        id: "f1",
+        title: "Eugene Yan",
+        url: "https://eugeneyan.com/",
+        source: "Applied Scientist, Amazon · Blog",
+        description: "Writes some of the most widely read practitioner posts on recommendation systems, ranking, and evaluation design — start with anything he's written on reranking or offline/online metric gaps."
+      },
+      {
+        id: "f2",
+        title: "Thorsten Joachims",
+        url: "https://www.cs.cornell.edu/people/tj/",
+        source: "Cornell University · Faculty page",
+        description: "Learning-to-rank pioneer — his work on optimizing search engines with clickthrough data and counterfactual/off-policy learning underlies a large share of modern ranking theory."
+      },
+      {
+        id: "f3",
+        title: "Jay Alammar",
+        url: "https://jalammar.github.io/",
+        source: "Cohere · Blog",
+        description: "\"The Illustrated Transformer\" and similar visual explainers — the accessible on-ramp to the attention mechanisms that Deep Interest Network and SASRec above build ranking on top of."
+      },
+      {
+        id: "f4",
+        title: "Xavier Amatriain",
+        url: "https://www.amatriain.net/",
+        source: "Ex-Netflix, Ex-Quora · Blog",
+        description: "Co-author of Netflix's \"Recommendations: Beyond the 5 Stars\" posts and \"10 Lessons Learned from Building ML Systems\" — one of the earliest public accounts of a production ranking stack."
+      },
+      {
+        id: "f5",
+        title: "Jure Leskovec",
+        url: "https://cs.stanford.edu/~jure/",
+        source: "Stanford University · Faculty page",
+        description: "Led the PinSage work at Pinterest — graph neural networks for recommendation at a scale few academic labs ever get to test theory against."
+      },
+      {
+        id: "f6",
+        title: "Alex Beutel",
+        url: "https://www.alexbeutel.com/",
+        source: "Google · Personal site",
+        description: "Recommendation-ranking researcher behind Latent Cross (context in recurrent recommenders) and fairness-in-ranking work — the algorithmic-fairness angle an interview can turn to without warning."
+      },
+      {
+        id: "f7",
+        title: "Justin Basilico",
+        url: "https://www.slideshare.net/justinbasilico",
+        source: "Netflix · Talks & slides",
+        description: "Long-time lead on Netflix's recommendation and ranking systems; his RecSys/KDD conference talks are the closest thing to a public tour of how Netflix actually thinks about this problem."
       }
     ]
   }
