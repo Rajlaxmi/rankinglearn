@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ranking Faculty</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-name">Ranking Faculty</div>
+        <div class="brand-sub">Netflix Ads Ranking · Research Scientist prep</div>
+      </div>
+
+      <nav class="streams" id="streamNav" aria-label="Streams"></nav>
+
+      <div class="overall-progress">
+        <div class="op-label">Overall progress</div>
+        <div class="op-bar"><div class="op-fill" id="overallFill"></div></div>
+        <div class="op-count mono" id="overallCount">0 / 0 reviewed</div>
+      </div>
+    </aside>
+
+    <main class="content">
+      <header class="stream-header" id="streamHeader"></header>
+      <ul class="resource-list" id="resourceList"></ul>
+    </main>
+  </div>
+
+  <div class="pane-backdrop" id="backdrop"></div>
+  <aside class="side-pane" id="sidePane" aria-hidden="true">
+    <button class="pane-close" id="paneClose" aria-label="Close">&times;</button>
+    <div class="pane-body" id="paneBody"></div>
+  </aside>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
