@@ -122,7 +122,11 @@
   // so fixing the API key is enough without clearing localStorage by hand.
   function loadOrInitChat(stream, res) {
     var existing = chats[res.id];
-    var stuckOnFallback = existing && existing.usedFallback && existing.qIndex === 0;
+    // Detect "stuck on fallback" from the transcript itself, not just the
+    // usedFallback flag: older cached chats (saved before that flag existed)
+    // still open with a leading error message and no progress made.
+    var stuckOnFallback = existing && existing.qIndex === 0 &&
+      existing.transcript && existing.transcript[0] && existing.transcript[0].kind === "error";
     if (existing && existing.questions && !stuckOnFallback) {
       renderChat(stream, res);
       return;

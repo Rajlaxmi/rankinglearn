@@ -10,7 +10,28 @@ import anthropic
 
 MODEL = os.environ.get("ANTHROPIC_MODEL", "claude-opus-5")
 PORT = int(os.environ.get("PORT", "8000"))
-KEY_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".anthropic_api_key")
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+ENV_FILE = os.path.join(BASE_DIR, ".env")
+KEY_FILE = os.path.join(BASE_DIR, ".anthropic_api_key")
+
+
+def load_env_file():
+    """Load KEY=VALUE pairs from a local, untracked .env file if present.
+
+    Lets credentials live only in a local file you create yourself, never
+    typed into a chat transcript:  echo "ANTHROPIC_API_KEY=sk-ant-..." > .env
+    """
+    if not os.path.exists(ENV_FILE):
+        return
+    with open(ENV_FILE) as f:
+        for line in f:
+            line = line.strip()
+            if not line or line.startswith("#") or "=" not in line:
+                continue
+            key, _, value = line.partition("=")
+            key = key.strip()
+            value = value.strip().strip('"').strip("'")
+            os.environ.setdefault(key, value)
 
 
 def load_key_file():
@@ -54,12 +75,16 @@ VERDICT_SCHEMA = {
 }
 
 QUESTIONS_SYSTEM_PROMPT = (
-    "You write check-for-understanding questions for a candidate preparing for a "
-    "Netflix Ads Ranking Research Scientist interview. Given one specific resource "
-    "the candidate just reviewed, write exactly 3 questions that could only be asked "
-    "about THIS resource - reference its actual claims, numbers, systems, or "
-    "algorithms by name. Do not write generic reading-comprehension questions that "
-    "could apply to any resource in this section. Order them from foundational to "
+    "You are interviewing a candidate for a Netflix Ads Ranking Research Scientist "
+    "position. You are reviewing one specific resource the candidate just studied, "
+    "and you're deciding what to ask them about it in the interview. Write exactly "
+    "3 questions that could only be asked about THIS resource - reference its "
+    "actual claims, numbers, systems, or algorithms by name. Do not write generic "
+    "reading-comprehension questions that could apply to any resource in this "
+    "section. Skip surface-level questions about org structure, team placement, or "
+    "where something sits in a reporting chain - focus on the substantive technical "
+    "or methodological content: objectives, signals, tradeoffs, algorithms, and how "
+    "a candidate would reason about or apply them. Order them from foundational to "
     "probing, and keep each one to a single sentence. Respond only via the given "
     "JSON schema."
 )
@@ -69,14 +94,14 @@ QUESTIONS_SCHEMA = {
     "schema": {
         "type": "object",
         "properties": {
-            "questions": {
-                "type": "array",
-                "items": {"type": "string"},
-                "minItems": 3,
-                "maxItems": 3,
-            },
+            # Three required string fields, not a length-constrained array:
+            # the API's schema-validated output only supports minItems/maxItems
+            # of 0 or 1, so a fixed-shape object is how "exactly 3" gets enforced.
+            "question_1": {"type": "string"},
+            "question_2": {"type": "string"},
+            "question_3": {"type": "string"},
         },
-        "required": ["questions"],
+        "required": ["question_1", "question_2", "question_3"],
         "additionalProperties": False,
     },
 }
@@ -127,7 +152,8 @@ def generate_questions(payload):
     )
 
     text = next(b.text for b in response.content if b.type == "text")
-    return json.loads(text)
+    parsed = json.loads(text)
+    return {"questions": [parsed["question_1"], parsed["question_2"], parsed["question_3"]]}
 
 
 ENDPOINTS = {
@@ -182,6 +208,7 @@ class Handler(SimpleHTTPRequestHandler):
 
 
 if __name__ == "__main__":
+    load_env_file()
     load_key_file()
     if not (os.environ.get("ANTHROPIC_API_KEY") or os.environ.get("ANTHROPIC_AUTH_TOKEN")):
         print(
